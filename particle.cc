@@ -1,64 +1,74 @@
 #include "particle.h"
 #include <cmath>
 
-// CONSTRUCTORS
+// PARTICLE
 
+// constructors
 Particle::Particle(){
     mass_ = 0;
-    px_ = 0;
-    py_ = 0;
-    pz_ = 0;
+    momentum_ = 0;
 }
 
 Particle::Particle(const double& mass){
     mass_ = mass;
-    px_ = 0;
-    py_ = 0;
-    pz_ = 0;
+    momentum_ = 0;
 }
 
-Particle::Particle(const double& px, const double& py, const double& pz){
-    mass_ = 0;
-    px_ = px;
-    py_ = py;
-    pz_ = pz;
-}
-
-Particle::Particle(const double& mass, const double& px, const double& py, const double& pz){
+Particle::Particle(const double& mass, const double& momentum){
     mass_ = mass;
-    px_ = px;
-    py_ = py;
-    pz_ = pz;
+    momentum_ = momentum;
 }
 
-// SETTERS
-void Particle::setPx(const double& momentum_x){ px_ = momentum_x; }
-void Particle::setPy(const double& momentum_y){ py_ = momentum_y; }
-void Particle::setPz(const double& momentum_z){ pz_ = momentum_z; }
+// setters
 void Particle::setMass(const double& mass){ mass_ = mass; }
+void Particle::setP(const double& momentum){ momentum_ = momentum; }
 
-// GETTERS
-double Particle::Px() const { return px_; }
-double Particle::Py() const { return py_; }
-double Particle::Pz() const { return pz_; }
+// getters
+double Particle::Momentum() const { return momentum_; }
+double Particle::Energy() const { return sqrt(mass_*mass_ + (this->Momentum())*(this->Momentum())); }
 double Particle::Mass() const { return mass_; }
-double Particle::P() const { return sqrt(px_*px_ + py_*py_ + pz_*pz_); }
-double Particle::Theta() const {
-    if(px_*px_ + py_*py_ == 0 && pz_ > 0) return 0;
-    else if(px_*px_ + py_*py_ == 0 && pz_ > 0) return M_PI;
-    else return atan(sqrt(px_*px_ + py_*py_)/pz_);
-}
-double Particle::Phi() const{
-    if(px_ == 0 && py_ > 0) return M_PI;
-    else if(px_ == 0 && py_ < 0) return 0.5*3*M_PI;
-     else return atan(py_/px_);
-}
-double Particle::Energy() const { return sqrt(mass_*mass_ + (this->P())*(this->P())); }
 
-// OVERLOADED OPERATORS
-Particle Particle::operator+(const Particle& second_particle) const{
-    double px = px_ + second_particle.Px();
-    double py = py_ + second_particle.Py();
-    double pz = pz_ + second_particle.Pz();
-    double mass = mass_ + second_particle.Mass();
+// overloaded operators
+Particle Particle::operator+(const Particle& particle) const{
+    return Particle(mass_ + particle.Mass(), momentum_ + particle.Momentum());
+}
+
+// COMPOSITE PARTICLE
+
+// constructors
+CompositeParticle::CompositeParticle(){
+        mass_ = 0;
+    momentum_ = 0;
+}
+
+CompositeParticle::CompositeParticle(const double& mass){
+    mass_ = mass;
+    momentum_ = 0;
+}
+
+CompositeParticle::CompositeParticle(const double& mass, const double& momentum){
+    mass_ = mass;
+    momentum_ = momentum;
+}
+
+CompositeParticle::CompositeParticle(const Particle& particle){
+    momentum_ = particle.Momentum();
+    mass_ = sqrt(particle.Mass()*particle.Mass() + momentum_*momentum_);
+}
+
+// getters
+double CompositeParticle::Momentum() const { return momentum_; }
+double CompositeParticle::Energy() const { return mass_; }
+
+// utility methods
+void CompositeParticle::Add(const Particle& particle){
+    momentum_ += particle.Momentum();
+    mass_ += sqrt(particle.Mass()*particle.Mass() + particle.Momentum()*particle.Momentum());
+}
+
+// overloaded operators
+CompositeParticle CompositeParticle::operator<<(const Particle& particle){
+    this->mass_ += particle.Mass();
+    this->momentum_ += particle.Momentum();
+    return *this;
 }
