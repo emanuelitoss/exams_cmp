@@ -72,3 +72,17 @@ CompositeParticle CompositeParticle::operator<<(const Particle& particle){
     this->momentum_ += particle.Momentum();
     return *this;
 }
+
+//overloading << for both Classes
+
+std::ostream& operator<<(std::ostream& os, const Particle& particle){
+    using namespace std;
+    os << "\tMass:" << particle.Mass() << "\tMomentum:" << particle.Momentum() << "\t";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const CompositeParticle& comp_part){
+    using namespace std;
+    os << "\tMass:" << comp_part.Energy() << "\tMomentum:" << comp_part.Momentum() << "\t";
+    return os;
+}

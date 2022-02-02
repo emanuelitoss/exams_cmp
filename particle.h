@@ -1,3 +1,6 @@
+#ifndef particle_h
+#define particle_h
+
 #include <iostream>
 
 class Particle{
@@ -55,3 +58,5 @@ class CompositeParticle{
     double mass_;
     double momentum_;
 };
+
+#endif
