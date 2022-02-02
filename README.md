@@ -1,2 +1,2 @@
-# exams_CMP
+# exams_cmp
 Computing Methods for Physics (C++, ROOT, Python) exams
