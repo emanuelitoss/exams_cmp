@@ -139,7 +139,7 @@ const double& Material::IonizationEnergy() const { return ionization_energy_; }
 // https://pdg.lbl.gov/2018/reviews/rpp2018-rev-passage-particles-matter.pdf
 double Material::dEdx(const Particle& particle, const double& kinetic) const{
     // coefficient of Bethe Bloch formula
-    double coefficient = K_BETHE_BLOCH*particle.Charge()*particle.Charge()*this->charge_/this->atomic_mass_/particle.beta()/particle.beta();
+    double coefficient = this->density_*K_BETHE_BLOCH*particle.Charge()*particle.Charge()*this->charge_/this->atomic_mass_/particle.beta()/particle.beta();
     // inside the log
     double inside_log = 2*ELECTRON_MASS*particle.betagamma()*particle.betagamma()*kinetic/ionization_energy_/ionization_energy_;
     // Bethe Bloch formula in Mev/cm
