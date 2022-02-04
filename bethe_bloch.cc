@@ -143,7 +143,7 @@ double Material::dEdx(const Particle& particle, const double& kinetic) const{
     // inside the log
     double inside_log = 2*ELECTRON_MASS*particle.betagamma()*particle.betagamma()*kinetic/ionization_energy_/ionization_energy_;
     // Bethe Bloch formula in Mev/cm
-    return coefficient*(0.5*log(inside_log) - particle.beta()*particle.beta());
+    return fabs(coefficient*(0.5*log(inside_log) - particle.beta()*particle.beta()));
 }
 
 std::pair<double,double> Material::BraggPeak(Particle& particle, std::vector < std::pair <double,double> > data, const double& kineticMaximum, const double& length, const double& dx) const {
