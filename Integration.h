@@ -7,8 +7,7 @@
 
 using namespace std;
 
-// ABSTRACT CLASSES:
-
+// ABSTRACT CLASS:
 // Function
 class Function{
 
@@ -25,7 +24,6 @@ class Function{
 };
 
 // CONCRETE (AND CHILDREN) CLASSES:
-
 // Gauss
 class Gauss:public Function{
 
@@ -64,6 +62,84 @@ class Line:public Function{
     private:
     double coefficient_;
     double quote_;
+
+};
+
+// Exponential
+class Exponential:public Function{
+
+    public:
+    Exponential(const double&, const string&);
+    Exponential(const double&, const double&, const string&);
+    virtual ~Exponential();
+    void setParameter(const double&);
+    void setNormalization(const double&);
+    const double& Parameter() const;
+    void Normalize();
+    virtual double value(const double&) const;
+    virtual void Print() const;
+
+    private:
+    double parameter_;
+    double normalization_;
+
+};
+
+// ABSTRACT CLASS:
+// Integrator
+class Integrator{
+    public:
+    Integrator(Function*);
+    virtual ~Integrator();
+    void setIntegrand(Function*);
+    Function* integrand() const;
+    double integrandValue(const double&) const;
+    virtual double integrate(const double&, const double&) const = 0;
+    double Maximum(const double&, const double&) const;
+
+    private:
+    Function* f_;
+};
+
+
+// CONCRETE (AND CHILD) CLASSES:
+// Monte Carlo method
+class MonteCarloMethod:public Integrator{
+
+    public:
+    MonteCarloMethod(Function*, const int&);
+    virtual ~MonteCarloMethod();
+    virtual double integrate(const double&, const double&);
+
+    private:
+    int number_points_;
+    int counter_;
+
+};
+
+// Rectangles method
+class RectangleMethod:public Integrator{
+
+    private:
+    int number_rectangles_;
+
+    public:
+    RectangleMethod(Function*, const int&);
+    virtual ~RectangleMethod();
+    virtual double integrate(const double&, const double&) const;
+
+};
+
+// Trapezoid method
+class TrapezoidMethod:public Integrator{
+
+    private:
+    int number_trapezoids_;
+
+    public:
+    TrapezoidMethod(Function*, const int&);
+    virtual ~TrapezoidMethod();
+    virtual double integrate(const double&, const double&) const;
 
 };
 
