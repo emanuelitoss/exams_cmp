@@ -63,13 +63,15 @@ int main(){
         string outputName = functions[i]->Name() + "_data.txt";
         outputFile.open(outputName);
         functions[i]->Print(outputFile);
-        outputFile << "#Number i\tMonteCarlo\tTrapezoids\tRectangles" << endl;
 
         cout << "Choose lower bound for integration interval of the function \"" << functions[i]->Name() << "\": ";
         cin >> x_min;
         cout << "Choose upper bound for integration interval of the function \"" << functions[i]->Name() << "\": ";
         cin >> x_max;
         cout << endl;
+
+        outputFile << "#Integration range: [" << setprecision(3) << x_min << ", " << x_max << "]" << endl;
+        outputFile << "#Number i\tMonteCarlo\tTrapezoids\tRectangles" << endl;
 
         MonteCarloMethod* mc_int = new MonteCarloMethod(functions[i], nStepOfIntegration);
         TrapezoidMethod* trap_int = new TrapezoidMethod(functions[i], nStepOfIntegration);
@@ -103,8 +105,6 @@ int main(){
         outputFile.close();
 
     }
-
-    cout << endl;
     
     return(EXIT_SUCCESS);
 }
