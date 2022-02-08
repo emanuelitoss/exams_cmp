@@ -8,6 +8,7 @@ using namespace std;
 
 int main(){
     
+    /*
     Exponential* ciccio = new Exponential(1.01, 23, "exp function");
     ciccio->Print();
     ciccio->setParameter(1);
@@ -26,7 +27,8 @@ int main(){
     << "\n" << "\tINTEGRALE = " << mcint->integrate(0,2) << endl;
     cout << "\tESATTO = " << (1-exp(-ciccio->Parameter()*2)) << endl;
     delete mcint;
-    /* PROGRAMMA
+    */
+
     srand48(time(NULL));
 
     enum algorithm {MonteCarlo, Trapezoids, Rectangles};
@@ -35,26 +37,38 @@ int main(){
     double x_min, x_max;
     int nStepOfIntegration;
 
-    cout << "\n\tTesting the Integrator class ..." << endl;
+    cout << "\n\t\033[31mTesting the Integrator class ...\033[0m\n" << endl;
 
-    vector <Integrator> integrations;
-    integrations.push_back(exp);
+    vector <Function> functions;
+    functions.push_back(Gauss(0,1,"Standard normal distribution"));
+    functions.push_back(Exponential(1,1,"Normalized decreasing exponential"));
+    functions.push_back(Line(1,0,"Line bisection I-IV"));
     
-    cout << "Insert the lower bound of integration for decreasing exponential function" << endl;
-    cin >> x_min;
-    cout << "Insert the upper bound of integration for decreasing exponential function" << endl;
-    cin >> x_max;
+    for (int i = 0; i < functions.size(); i++){
+        cout << "Choose lower bound for integration interval of the function \"" << functions[i].Name() << "\": ";
+        cin >> x_min;
+        cout << endl;
 
-    int chooseAlgo;
-    do{
-        cout << "Choose which algoprithm you want to use: MonteCarlo (0), Trapezoids (1), Rectangles (2)" << endl; 
-        cin >> chooseAlgo;
-    }while(chooseAlgo <=2 && chooseAlgo >=0);
+        cout << "Choose upper bound for integration interval of the function \"" << functions[i].Name() << "\": ";
+        cin >> x_max;
+        cout << endl;
 
-    if(chooseAlgo == MonteCarlo){}
-    else if(chooseAlgo == Trapezoids){}
-    else if(chooseAlgo == Rectangles){}
-    else{}
-    */
+        MonteCarloMethod* mc_int = new MonteCarloMethod(&functions[i], nStepOfIntegration);
+        TrapezoidMethod* trap_int = new TrapezoidMethod(&functions[i], nStepOfIntegration);
+        RectangleMethod* rect_int = new RectangleMethod(&functions[i], nStepOfIntegration);
+
+        for (int nStepOfIntegration = 10; nStepOfIntegration <= 1E6; nStepOfIntegration*=10){
+            mc_int->setNumberPoints(nStepOfIntegration);
+            trap_int->setNumberPoints(nStepOfIntegration);
+            rect_int->setNumberPoints(nStepOfIntegration);
+        }
+        
+        delete mc_int;
+        delete trap_int;
+        delete rect_int;
+
+    }
+    
+    
     return(EXIT_SUCCESS);
 }
