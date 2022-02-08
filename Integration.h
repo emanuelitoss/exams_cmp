@@ -29,6 +29,7 @@ class MonteCarloMethod:public Integrator{
 
     public:
     MonteCarloMethod(Function*, const int&);
+    void setNumberPoints(const int&);
     virtual ~MonteCarloMethod(){};
     virtual double integrate(const double&, const double&) const;
 
@@ -45,6 +46,7 @@ class RectangleMethod:public Integrator{
 
     public:
     RectangleMethod(Function*, const int&);
+    void setNumberPoints(const int&);
     virtual ~RectangleMethod(){};
     virtual double integrate(const double&, const double&) const;
 
@@ -58,6 +60,7 @@ class TrapezoidMethod:public Integrator{
 
     public:
     TrapezoidMethod(Function*, const int&);
+    void setNumberPoints(const int&);
     virtual ~TrapezoidMethod(){};
     virtual double integrate(const double&, const double&) const;
 

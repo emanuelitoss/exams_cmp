@@ -52,6 +52,8 @@ MonteCarloMethod::MonteCarloMethod(Function* function, const int& numberOFpoints
     number_points_ = numberOFpoints;
 }
 
+void MonteCarloMethod::setNumberPoints(const int& n){ number_points_ = n; }
+
 //  I will generate random points in the interval [a,b] and I will count the number of points within
 //  the area to integrate. Then this number is normalized and multiplied by the area in wich these points
 //  are generated. This final result is the value of the integrand
@@ -78,6 +80,8 @@ RectangleMethod::RectangleMethod(Function* function, const int& numberOFpoints) 
     number_rectangles_ = numberOFpoints;
 }
 
+void RectangleMethod::setNumberPoints(const int& n){ number_rectangles_ = n; }
+
 double RectangleMethod::integrate(const double& xlow, const double& xhigh) const {
     double step_dx = (xhigh - xlow)/number_rectangles_;
     double area = 0;
@@ -92,6 +96,8 @@ double RectangleMethod::integrate(const double& xlow, const double& xhigh) const
 TrapezoidMethod::TrapezoidMethod(Function* function, const int& numberOFpoints) : Integrator(function){
     number_trapezoids_ = numberOFpoints;
 }
+
+void TrapezoidMethod::setNumberPoints(const int& n){ number_trapezoids_ = n; }
 
 double TrapezoidMethod::integrate(const double& xlow, const double& xhigh) const {
     double step_dx = (xhigh - xlow)/number_trapezoids_;
