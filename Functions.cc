@@ -27,8 +27,9 @@ double Gauss::FWHM() const { return std_deviation_*sqrt(2*log(2)); }
 double Gauss::value(const double& x) const{
     return exp(-(x-mean_)*(x - mean_)/2/std_deviation_/std_deviation_)/sqrt(2*M_PI)/std_deviation_;
 }
-void Gauss::Print() const {
-    cout << "Gaussian function with mean = " << mean_ << " and std deviation = " << std_deviation_ << endl;
+ostream& Gauss::Print(ostream& output) const {
+    output << "#Gaussian function with mean = " << mean_ << " and std deviation = " << std_deviation_ << endl;
+    return output;
 }
 
 // #2 Line
@@ -43,8 +44,9 @@ const double& Line::Quote() const { return quote_; }
 double Line::value(const double& x) const {
     return x*coefficient_ + quote_;
 }
-void Line::Print() const{
-    cout << "Line function with coefficient = " << coefficient_ << " and quote = " << quote_ << endl;
+ostream& Line::Print(ostream& output) const{
+    output << "#Line function with coefficient = " << coefficient_ << " and quote = " << quote_ << endl;
+    return output;
 }
 
 // #3 Exponential
@@ -79,6 +81,7 @@ double Exponential::value(const double& x) const {
     if (x < 0) return 0;
     else return normalization_*exp(-x/parameter_);
 }
-void Exponential::Print() const {
-    cout << "Exponential function with parameter lambda = " << parameter_ << " and normalization = " << normalization_ << endl;
+ostream& Exponential::Print(ostream& output) const {
+    output << "#Exponential function with parameter lambda = " << parameter_ << " and normalization = " << normalization_ << endl;
+    return output;
 }

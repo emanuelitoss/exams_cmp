@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-#define EPS 0.001
+#define EPS 0.00001
 
 using namespace std;
 
@@ -52,6 +52,7 @@ MonteCarloMethod::MonteCarloMethod(Function* function, const int& numberOFpoints
     number_points_ = numberOFpoints;
 }
 
+// setter: number of generated points in MC algorithm
 void MonteCarloMethod::setNumberPoints(const int& n){ number_points_ = n; }
 
 //  I will generate random points in the interval [a,b] and I will count the number of points within
@@ -60,18 +61,21 @@ void MonteCarloMethod::setNumberPoints(const int& n){ number_points_ = n; }
 double MonteCarloMethod::integrate(const double& xlow, const double& xhigh) const {
 
     double counter = 0;
-    double DeltaX = xhigh - xlow;
-    double x, y;
+    double DeltaX = xhigh - xlow, DeltaY = this->Maximum(xlow,xhigh) - this->Minimum(xlow,xhigh);
+    double x, y, trueValue;
     for(int i = 0; i < number_points_; ++i){
         // generation of a random number in x axis
         x = xlow + drand48()*DeltaX;
         // generation of a random number in y axis
-        y = drand48()*this->Maximum(xlow,xhigh);
+        y = drand48()*DeltaY;
 
-        if(integrand()->value(x) > y) counter++;
+        trueValue = integrand()->value(x);
+
+        if(trueValue > 0) if(y <= trueValue && y > 0) counter++;
+        if(trueValue < 0) if(y>trueValue && y<0) counter--;
     }
 
-    double area = this->Maximum(xlow,xhigh)*DeltaX*counter/number_points_;
+    double area = this->Maximum(xlow,xhigh)*DeltaX*(double)counter/number_points_;
     return area;
 }
 

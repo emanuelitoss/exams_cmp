@@ -11,13 +11,13 @@ class Function{
 
     public:
     // constructor
-    Function(const std::string&);
-    // (virtual) destructor (Polymorphism)
+    Function(const std::string& name);
+    // (virtual) destructor
     virtual ~Function(){};
     // value of the function in a given point x
     virtual double value(const double& x) const = 0;  //pure virtual
     // useful for checks
-    virtual void Print() const = 0;  //pure virtual
+    virtual ostream& Print(ostream& output) const = 0;  //pure virtual
     // name of the custom function (for example "Planck distribution")
     virtual string Name() const { return name_; }
 
@@ -48,7 +48,7 @@ class Gauss:public Function{
     double FWHM() const;
     // virtual functions of base class
     virtual double value(const double& x) const;
-    virtual void Print() const;
+    virtual ostream& Print(ostream& output) const;
 
     private:
     double mean_;
@@ -67,16 +67,16 @@ class Exponential:public Function{
     // destructor
     virtual ~Exponential(){};
     // setters
-    void setParameter(const double&);
-    void setNormalization(const double&);
+    void setParameter(const double& alpha);
+    void setNormalization(const double& Norm);
     // getters
     const double& Parameter() const;
     const double& Normalization() const;
     // operation to normalize the exponential function to something like that: a*exp(-a*x)
     void Normalize();   // cannot be const
     // virtual functions of base class
-    virtual double value(const double&) const;
-    virtual void Print() const;
+    virtual double value(const double& x) const;
+    virtual ostream& Print(ostream& output) const;
 
     private:
     double parameter_;
@@ -89,18 +89,18 @@ class Line:public Function{
 
     public:
     // constructor
-    Line(const double&, const double&, const string&);
+    Line(const double& angularCoefficient, const double& quote, const string& name);
     // (virtual) destructor
     virtual ~Line(){};
     // setters
-    void setCoefficient(const double&);
-    void setQuote(const double&);
+    void setCoefficient(const double& angularCoefficient);
+    void setQuote(const double& quote);
     // getters
     const double& Coefficient() const;
     const double& Quote() const;
     // virtual functions of base class
-    virtual double value(const double&) const;
-    virtual void Print() const; 
+    virtual double value(const double& x) const;
+    virtual ostream& Print(ostream& output) const; 
 
     private:
     double coefficient_;
