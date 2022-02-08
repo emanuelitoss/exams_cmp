@@ -1,120 +1,64 @@
 #include "Integration.h"
+#include <iostream>
+#include <string>
+#include <cmath>
 
 #define EPS 0.001
 
 using namespace std;
 
 // ABSTRACT CLASSES:
+Integrator::Integrator(Function* function){
+    f_ = function;
+}
 
-// Function
-Function::Function(const string& name){ name_ = name; }
+// Integrator
 void Integrator::setIntegrand(Function* function){
     f_ = function;
 }
-// Integrator
+
 Function* Integrator::integrand() const { return f_; }
+
 double Integrator::integrandValue(const double& x) const {
     return f_->value(x);
 }
+
 double Integrator::Maximum(const double& xlow, const double& xhigh) const {
     double maximum = f_->value(xlow);
     double DeltaX = xhigh-xlow;
+    double point;
     for(int i = 0; i<round(DeltaX/EPS); ++i){
-        if(f_->value(xlow + DeltaX*EPS*i) > maximum)
-            maximum = f_->value(xlow + DeltaX*EPS*i);
+        point = f_->value(xlow + DeltaX*EPS*i);
+        if(point > maximum) maximum = point;
     }
     return maximum;
 }
 
+double Integrator::Minimum(const double& xlow, const double& xhigh) const {
+    double minimum = f_->value(xlow);
+    double DeltaX = xhigh-xlow;
+    double point;
+    for(int i = 0; i<round(DeltaX/EPS); ++i){
+        point = f_->value(xlow + DeltaX*EPS*i);
+        if(point < minimum) minimum = point;
+    }
+    return minimum;
+}
+
 // CONCRETE (AND CHILDREN) CLASSES METHODS
-
-// A) Functions
-
-// #1 Gaussian
-Gauss::Gauss(const double& meanValue, const double& sdtDeviation, const string& name):Function(name){
-    mean_ = meanValue;
-    std_deviation_ = sdtDeviation;
-}
-void Gauss::setMean(const double& meanValue){ mean_ = meanValue; }
-void Gauss::setStdDev(const double& sdtDeviation){ std_deviation_ = sdtDeviation; }
-const double& Gauss::Mean() const { return mean_;}
-const double& Gauss::StdDev() const { return std_deviation_; }
-double Gauss::SigmasFromMu(const double& x) const {
-    return (fabs(x - mean_)/std_deviation_);
-}
-double Gauss::FWHM() const { return std_deviation_*sqrt(2*log(2)); }
-double Gauss::value(const double& x) const{
-    return exp(-(x-mean_)*(x - mean_)/2/std_deviation_)/sqrt(2*M_PI)/std_deviation_;
-}
-void Gauss::Print() const {
-    cout << "Gaussian function with mean = " << mean_ << " and std deviation = " << std_deviation_ << endl;
-}
-
-// #2 Line
-Line::Line(const double& coefficient, const double& quote, const string& name):Function(name){
-    coefficient_ = coefficient;
-    quote_ = quote;
-}
-void Line::setCoefficient(const double& coefficient){ coefficient_ = coefficient; }
-void Line::setQuote(const double& quote){ quote_ = quote; }
-const double& Line::Coefficient() const { return coefficient_; }
-const double& Line::Quote() const { return quote_; }
-double Line::value(const double& x) const {
-    return x*coefficient_ + quote_;
-}
-void Line::Print() const{
-    cout << "Line function with coefficient = " << coefficient_ << " and quote = " << quote_ << endl;
-}
-
-// #3 Exponential
-Exponential::Exponential(const double& lambda, const string& name):Function(name){
-    if (lambda < 0){
-        cerr << "Error: exponential function must have positive value for the parameter lambda" << endl;
-        cout << "Insert a new value:" << endl;
-        cin >> parameter_;
-        normalization_ = parameter_;
-    }else{
-        parameter_ = lambda;
-        normalization_ = lambda;
-    }
-}
-Exponential::Exponential(const double& lambda, const double& normalization, const string& name):Function(name){
-    if (lambda < 0){
-        cerr << "Error: exponential function must have positive value for the parameter lambda" << endl;
-        cout << "Insert a new value:" << endl;
-        cin >> parameter_;
-        normalization_ = normalization;
-    }else{
-        parameter_ = lambda;
-        normalization_ = normalization;;
-    }
-}
-void Exponential::setParameter(const double& lambda){ parameter_ = lambda; }
-void Exponential::setNormalization(const double& norm){ normalization_ = norm; }
-const double& Exponential::Parameter() const { return parameter_; }
-void Exponential::Normalize(){ normalization_ = parameter_; }
-double Exponential::value(const double& x) const {
-    if (x < 0) return 0;
-    else return normalization_*exp(-x/parameter_);
-}
-void Exponential::Print() const {
-    cout << "Exponential function with parameter lambda = " << parameter_ << " and normalization = " << normalization_ << endl;
-}
-
-// B) Integration methods
+// Integration methods
 
 // Monte Carlo method:
-
-MonteCarloMethod::MonteCarloMethod(Function* function, const int& numberOFpoints):Integrator(function){
-    counter_ = 0;
+MonteCarloMethod::MonteCarloMethod(Function* function, const int& numberOFpoints) : Integrator(function){
     number_points_ = numberOFpoints;
 }
 
 //  I will generate random points in the interval [a,b] and I will count the number of points within
 //  the area to integrate. Then this number is normalized and multiplied by the area in wich these points
 //  are generated. This final result is the value of the integrand
-double MonteCarloMethod::integrate(const double& xlow, const double& xhigh){
+double MonteCarloMethod::integrate(const double& xlow, const double& xhigh) const {
 
+    double counter = 0;
     double DeltaX = xhigh - xlow;
     double x, y;
     for(int i = 0; i < number_points_; ++i){
@@ -123,16 +67,15 @@ double MonteCarloMethod::integrate(const double& xlow, const double& xhigh){
         // generation of a random number in y axis
         y = drand48()*this->Maximum(xlow,xhigh);
 
-        if(integrand()->value(x) > y) counter_++;
+        if(integrand()->value(x) > y) counter++;
     }
 
-    double area = this->Maximum(xlow,xhigh)*DeltaX*counter_/number_points_;
-    counter_ = 0;
+    double area = this->Maximum(xlow,xhigh)*DeltaX*counter/number_points_;
     return area;
 }
 
 // Rectangles method
-RectangleMethod::RectangleMethod(Function* function, const int& numberOFpoints):Integrator(function){
+RectangleMethod::RectangleMethod(Function* function, const int& numberOFpoints) : Integrator(function){
     number_rectangles_ = numberOFpoints;
 }
 
@@ -147,7 +90,7 @@ double RectangleMethod::integrate(const double& xlow, const double& xhigh) const
 }
 
 // Trapezoids method
-TrapezoidMethod::TrapezoidMethod(Function* function, const int& numberOFpoints):Integrator(function){
+TrapezoidMethod::TrapezoidMethod(Function* function, const int& numberOFpoints) : Integrator(function){
     number_trapezoids_ = numberOFpoints;
 }
 
