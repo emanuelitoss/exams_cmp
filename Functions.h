@@ -5,15 +5,20 @@
 
 using namespace std;
 
-// ABSTRACT CLASS:
-// Function
+// ABSTRACT CLASS: Function
+// A simple mathematical function with some features
 class Function{
 
     public:
-    Function(const std::string& name);
+    // constructor
+    Function(const std::string&);
+    // (virtual) destructor (Polymorphism)
     virtual ~Function(){};
-    virtual double value(const double&) const = 0;
-    virtual void Print() const = 0;
+    // value of the function in a given point x
+    virtual double value(const double& x) const = 0;  //pure virtual
+    // useful for checks
+    virtual void Print() const = 0;  //pure virtual
+    // name of the custom function (for example "Planck distribution")
     virtual string Name() const { return name_; }
 
     private:
@@ -22,19 +27,27 @@ class Function{
 };
 
 // CONCRETE (AND CHILDREN) CLASSES:
-// Gauss
+
+// #1 Gaussian function
 class Gauss:public Function{
 
     public:
-    Gauss(const double&, const double&, const string&);
+    // constructor
+    Gauss(const double& mean, const double& sigma, const string&);
+    // destructor + "implementation"
     virtual ~Gauss(){};
-    void setMean(const double&);
-    void setStdDev(const double&);
+    // setters
+    void setMean(const double& mean);
+    void setStdDev(const double& sigma);
+    // getters
     const double& Mean() const;
     const double& StdDev() const;
-    double SigmasFromMu(const double&) const;
+    // distance from the center in units of standard deviation
+    double SigmasFromMu(const double& x) const;
+    // Full Width Half Maximum
     double FWHM() const;
-    virtual double value(const double&) const;
+    // virtual functions of base class
+    virtual double value(const double& x) const;
     virtual void Print() const;
 
     private:
@@ -43,18 +56,25 @@ class Gauss:public Function{
 
 };
 
-// Exponential
+// #2 Exponential function (decreasing, valid for x>0)
 class Exponential:public Function{
 
     public:
-    Exponential(const double&, const string&);
-    Exponential(const double&, const double&, const string&);
+    // constructor
+    Exponential(const double& alpha, const string&);
+        //NOTE: the standard normalization is a*exp(-a*x), but you can choose a different constant.
+    Exponential(const double& alpha, const double& norm, const string&);
+    // destructor
     virtual ~Exponential(){};
+    // setters
     void setParameter(const double&);
     void setNormalization(const double&);
+    // getters
     const double& Parameter() const;
     const double& Normalization() const;
-    void Normalize();
+    // operation to normalize the exponential function to something like that: a*exp(-a*x)
+    void Normalize();   // cannot be const
+    // virtual functions of base class
     virtual double value(const double&) const;
     virtual void Print() const;
 
@@ -64,16 +84,21 @@ class Exponential:public Function{
 
 };
 
-// Line
+// Line function
 class Line:public Function{
 
     public:
+    // constructor
     Line(const double&, const double&, const string&);
+    // (virtual) destructor
     virtual ~Line(){};
+    // setters
     void setCoefficient(const double&);
     void setQuote(const double&);
+    // getters
     const double& Coefficient() const;
     const double& Quote() const;
+    // virtual functions of base class
     virtual double value(const double&) const;
     virtual void Print() const; 
 

@@ -1,4 +1,3 @@
-#include <string>
 #include "Functions.h"
 
 #ifndef Integration_h

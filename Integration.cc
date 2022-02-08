@@ -1,6 +1,5 @@
 #include "Integration.h"
 #include <iostream>
-#include <string>
 #include <cmath>
 
 #define EPS 0.001
