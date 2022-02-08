@@ -79,7 +79,7 @@ const double& Exponential::Normalization() const { return normalization_; }
 void Exponential::Normalize(){ normalization_ = parameter_; }
 double Exponential::value(const double& x) const {
     if (x < 0) return 0;
-    else return normalization_*exp(-x/parameter_);
+    else return normalization_*exp(-x*parameter_);
 }
 ostream& Exponential::Print(ostream& output) const {
     output << "#Exponential function with parameter lambda = " << parameter_ << " and normalization = " << normalization_ << endl;
