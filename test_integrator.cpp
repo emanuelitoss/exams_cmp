@@ -4,71 +4,107 @@
 #include <cmath>
 #include <time.h>
 #include <vector>
+#include <iomanip>
+#include <fstream>
 using namespace std;
 
+#define RED "\033[0;31m"
+#define BOLD_CYAN "\033[1;36m"
+#define RESET_COLOR "\033[0m"
+
 int main(){
-    
-    /*
-    Exponential* ciccio = new Exponential(1.01, 23, "exp function");
-    ciccio->Print();
-    ciccio->setParameter(1);
-    ciccio->setNormalization(1.10);
-    cout << "Provo alcune funzioni della Classe di Gauss:\n"
-    << "1)\tMedia e dev std (modificati):\t" << ciccio->Parameter() << ", " << ciccio->Normalization() << "\n"
-    << endl;
-    ciccio -> Normalize();
-    cout << "2)\tNormalizing function...\n" << endl;
-    ciccio->Print();
-    cout << "4)\tValue:\t" << ciccio->value(200) << "\n"
-    << endl;
 
-    TrapezoidMethod* mcint = new TrapezoidMethod(ciccio, 10000);
-    cout << "\n\nCiccio è nomralizzato, quindi provo a vedere se l'integrale tra 0 e infinito va a 1"
-    << "\n" << "\tINTEGRALE = " << mcint->integrate(0,2) << endl;
-    cout << "\tESATTO = " << (1-exp(-ciccio->Parameter()*2)) << endl;
-    delete mcint;
-    */
+    // initializing random generator
+    //srand48(time(NULL));
 
-    srand48(time(NULL));
-
-    enum algorithm {MonteCarlo, Trapezoids, Rectangles};
-    algorithm choice;
-
+    // variables of the problem
     double x_min, x_max;
     int nStepOfIntegration;
+    double integralMC, integralTrap, integralRect;
 
-    cout << "\n\t\033[31mTesting the Integrator class ...\033[0m\n" << endl;
+    // message to the user
+    cout << RED << "\n\tTesting the Integrator class ...\n" << RESET_COLOR << endl;
 
-    vector <Function> functions;
-    functions.push_back(Gauss(0,1,"Standard normal distribution"));
-    functions.push_back(Exponential(1,1,"Normalized decreasing exponential"));
-    functions.push_back(Line(1,0,"Line bisection I-IV"));
+    // different mathematical functions
+    vector <Function*> functions;
+
+    // parameters to set the mathematical functions
+    double parameter1 = 0, parameter2 = 0;
+
+    // Gaussian function
+    cout << "Insert mean of Gaussian function: ";
+    cin >> parameter1;
+    cout << "Instert standard deviation of Gaussian function: ";
+    cin >> parameter2;
+    cout << endl;
+    functions.push_back(new Gauss(parameter1, parameter2,"gaussian"));
+
+    // Decreasing exponential function
+    cout << "Insert coefficient alpha of the function N*exp(-alpha*x): ";
+    cin >> parameter1;
+    cout << "Insert coefficient N of the function N*exp(-alpha*x): ";
+    cin >> parameter2;
+    cout << endl;
+    functions.push_back(new Exponential(parameter1, parameter2,"exponential"));
+
+    // Line function
+    cout << "Insert coefficient of a line function: ";
+    cin >> parameter1;
+    cout << "Instert quote deviation of Gaussian function: ";
+    cin >> parameter2;
+    cout << endl;
+    functions.push_back(new Line(parameter1, parameter2,"lineFunction"));
     
+    // Loop over the functions
     for (int i = 0; i < functions.size(); i++){
-        cout << "Choose lower bound for integration interval of the function \"" << functions[i].Name() << "\": ";
-        cin >> x_min;
-        cout << endl;
 
-        cout << "Choose upper bound for integration interval of the function \"" << functions[i].Name() << "\": ";
+        // output file 
+        ofstream outputFile;
+        string outputName = functions[i]->Name() + "_data.txt";
+        outputFile.open(outputName);
+        functions[i]->Print(outputFile);
+        outputFile << "#Number i\tMonteCarlo\tTrapezoids\tRectangles" << endl;
+
+        cout << "Choose lower bound for integration interval of the function \"" << functions[i]->Name() << "\": ";
+        cin >> x_min;
+        cout << "Choose upper bound for integration interval of the function \"" << functions[i]->Name() << "\": ";
         cin >> x_max;
         cout << endl;
 
-        MonteCarloMethod* mc_int = new MonteCarloMethod(&functions[i], nStepOfIntegration);
-        TrapezoidMethod* trap_int = new TrapezoidMethod(&functions[i], nStepOfIntegration);
-        RectangleMethod* rect_int = new RectangleMethod(&functions[i], nStepOfIntegration);
+        MonteCarloMethod* mc_int = new MonteCarloMethod(functions[i], nStepOfIntegration);
+        TrapezoidMethod* trap_int = new TrapezoidMethod(functions[i], nStepOfIntegration);
+        RectangleMethod* rect_int = new RectangleMethod(functions[i], nStepOfIntegration);
+
+        cout << "\nIntegration function \"" << BOLD_CYAN << functions[i]->Name() << RESET_COLOR << "\"\033[0m" << " in interval ["
+            << setprecision(4) << x_min << ", " << x_max << "] using three methods:" << endl;
 
         for (int nStepOfIntegration = 10; nStepOfIntegration <= 1E6; nStepOfIntegration*=10){
+
             mc_int->setNumberPoints(nStepOfIntegration);
             trap_int->setNumberPoints(nStepOfIntegration);
             rect_int->setNumberPoints(nStepOfIntegration);
+
+            integralMC = mc_int->integrate(x_min,x_max);
+            integralTrap = trap_int->integrate(x_min,x_max);
+            integralRect = rect_int->integrate(x_min,x_max);
+
+            cout << "\n\t1) Monte Carlo method with " << nStepOfIntegration << " step of integration:\t" << scientific << integralMC << endl;
+            cout << "\t2) Trapezoids method with " << nStepOfIntegration << " step of integration:\t" << scientific << integralTrap << endl;
+            cout << "\t3) Rectangeles method with " << nStepOfIntegration << " step of integration:\t" << scientific << integralRect << "\n" << endl;
+
+            outputFile << nStepOfIntegration << "\t\t\t" << integralMC << "\t\t\t" << integralTrap << "\t\t" << integralRect << endl;
+
         }
         
         delete mc_int;
         delete trap_int;
         delete rect_int;
 
+        outputFile.close();
+
     }
-    
+
+    cout << endl;
     
     return(EXIT_SUCCESS);
 }
