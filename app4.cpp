@@ -13,7 +13,7 @@ int main(){
     
     // predisposition for output file
     ofstream outputFile;
-    outputFile.open("true_values.txt");
+    outputFile.open("true_values.dat");
     outputFile << "#All the are expressed in picoFarad" << endl;
     outputFile << "#c1\tc_equivalent\t" << endl;
 
