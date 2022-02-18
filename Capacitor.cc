@@ -18,16 +18,22 @@ Capacitor::Capacitor(){
 
 Capacitor::Capacitor(const double& area, const double& distance){
     // if not specified, I choose a ceramic capacitor
-    relativeEps_ = 8.35;
-    area_ = area;
-    separation_ = distance;
+    if(area>0 && distance>0){
+        relativeEps_ = 8.35;
+        area_ = area;
+        separation_ = distance;
+    }else{
+        if(area<=0 && distance<=0) std::cerr << RED << "Error: area and distance must be greater or equal to 0" << COLOR_RESET << std::endl;
+        else if(area<=0) std::cerr << RED << "Error: area must be greater or equal to 0" << COLOR_RESET << std::endl;
+        else if(distance<=0) std::cerr << RED << "Error: separation distance must be greater or equal to 0" << COLOR_RESET << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 Capacitor::Capacitor(const double& area, const double& distance, const double& relativeEps){
     if(relativeEps>=1){
+        Capacitor(area, distance); // ensures correct area and distance
         relativeEps_ = relativeEps;
-        area_ = area;
-        separation_ = distance;
     }else{
         std::cerr << RED << "Error: relative dielectric constant must be greater or equal to 1" << COLOR_RESET << std::endl;
         exit(EXIT_FAILURE);
@@ -38,17 +44,29 @@ Capacitor::Capacitor(const double& area, const double& distance, const double& r
 
 // sets relative dielectric constant of the materia between the plates (adimensional)
 void Capacitor::setEps(const double& epsilon){
-    relativeEps_ = epsilon;
+    if(epsilon >= 1) relativeEps_ = epsilon;
+    else{
+        std::cerr << RED << "Error: relative dielectric constant must be greater or equal to 1" << COLOR_RESET << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 // sets the area of the plates (meters*meters)
 void Capacitor::setArea(const double& area){
-    area_ = area;
+    if(area > 0) area_ = area;
+    else{
+        std::cerr << RED << "Error: area must be greater or equal to 0" << COLOR_RESET << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 // sets the distance between the plates (meters)
 void Capacitor::setSeparation(const double& separation){
-    separation_ = separation;
+    if(separation > 0) separation_ = separation;
+    else{
+        std::cerr << RED << "Error: separation distance must be greater or equal to 0" << COLOR_RESET << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 // GETTERS
@@ -87,7 +105,13 @@ void Capacitor::print() const {
 
 // changes value of A in order to return the right Capacitance
 void Capacitor::setCapacitance(const double& cap){
-    area_ = cap*separation_/EPS_VACUUM/relativeEps_;
+    if(cap >= 0){
+        area_ = cap*separation_/EPS_VACUUM/relativeEps_;
+    }
+    else{
+        std::cerr << RED << "Error: capacitance must be greater or equal to 0" << COLOR_RESET << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 // OVERLOADED OPERATORS

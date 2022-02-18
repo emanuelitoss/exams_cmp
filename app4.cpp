@@ -25,13 +25,13 @@ int main(){
 
     // setting 3 fixed capacitance values
     c2->setCapacitance(10e-12);
-    c3->setCapacitance(3e-12);
+    c3->setCapacitance(5e-12);
     c4->setCapacitance(15e-12);
 
     // number of generated Data
     int numberData = 1000;
     // maximum and minimum values for generated capacitance
-    double minC = 1e-12, maxC = 100e-12;
+    double minC = 1, maxC = 100;
     // total equivalent capacitance of the circuit
     double totalC;
     //useful
@@ -46,7 +46,7 @@ int main(){
         // evaluation of euqivalent capacitance
         totalC = (( (*c1) || (*c2) ) + (*c5) ).capacitance();
         // writing in output file (in picoFarad)
-        outputFile << c1->capacitance()*1e12 << "\t" << totalC*1e12 << endl;;
+        outputFile << c1->capacitance()*e12 << "\t" << totalC*e12 << endl;;
     }
 
     // removing objects pointers
@@ -55,6 +55,10 @@ int main(){
     delete c3;
     delete c2;
     delete gen;
+
+    // closing the file
     outputFile.close();
+
+    // exit
     return EXIT_SUCCESS;
 }
